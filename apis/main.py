@@ -10,6 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from apis.model import *
 from apis.schema import *
 import datetime
+from jwt.exceptions import PyJWTError
+
 app = FastAPI()
 
 connect(db="Sri_bha",username='new_user', password='Svs@123', host="98.80.9.80", port=27017)
