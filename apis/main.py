@@ -65,7 +65,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if not current_user.Active_Status == "Inctive":
+    if not current_user.Active_Status == "A":
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
