@@ -103,7 +103,7 @@ async def signup(me: UserCreate, current_user: User = Depends(get_current_active
     
     result = User.objects.order_by("-user_id").first()
     if result:
-        Employee_id = result.Employee_id + 1
+        Employee_id = result.user_id + 1
     else:
         Employee_id = 1001
 
