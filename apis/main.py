@@ -12,8 +12,8 @@ from apis.schema import *
 import datetime
 app = FastAPI()
 
-# connect(db="Role",username='new_user', password='Svs@123', host="16.171.23.247", port=27017)
-connect(db="New_data",host="localhost",port=27017)
+connect(db="Sri_bha",username='new_user', password='Svs@123', host="98.80.9.80", port=27017)
+# connect(db="New_data",host="localhost",port=27017)
 
 # connect( db='SMBT', username='api-user', password='mh$cover@47', host='ec2-13-127-65-92.ap-south-1.compute.amazonaws.com:27017')
 
