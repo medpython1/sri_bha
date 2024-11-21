@@ -99,8 +99,8 @@ async def login(from_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @app.post("/signup")
-async def signup(me: UserCreate):
-    # , current_user: User = Depends(get_current_hr_access)
+async def signup(me: UserCreate, current_user: User = Depends(get_current_active_user)):
+    
     result = User.objects.order_by("-user_id").first()
     if result:
         Employee_id = result.Employee_id + 1
@@ -116,7 +116,7 @@ async def signup(me: UserCreate):
         return "Invalid Credentials"
     
 @app.get("/get_user_list")
-def getting_data(current_user: User = Depends(get_current_hr_access)):
+def getting_data(current_user: User = Depends(get_current_active_user)):
     gett_user=User.objects().to_json()
     get_data=json.loads(gett_user)
     if get_data:
@@ -124,7 +124,7 @@ def getting_data(current_user: User = Depends(get_current_hr_access)):
     return data
 
 @app.post("/change_password")
-def change_password(me:change_pass_schema):
+def change_password(me:change_pass_schema, current_user: User = Depends(get_current_active_user)):
     new=User.objects(user_id=me.user_id).to_json()
     new1=json.loads(new)
     if new1:
@@ -144,7 +144,7 @@ def change_password(me:change_pass_schema):
          return JSONResponse(content=a, status_code=400)
 #Create Vendor Details
 @app.post("/Create_vendor")
-def create_vendor_fun(get_Schema:add_vendor_schema):
+def create_vendor_fun(get_Schema:add_vendor_schema, current_user: User = Depends(get_current_active_user)):
     current_time=datetime.datetime.now()
     company_code="VEN{:002d}".format(vendor_master_data.objects.count()+1)
     store_vendor_db=vendor_master_data(sno=vendor_master_data.objects.count()+1,company_code=company_code,
@@ -155,7 +155,7 @@ def create_vendor_fun(get_Schema:add_vendor_schema):
     return {"message": "Vendor created successfully"}
 current_time=datetime.datetime.now()
 @app.get("/get_vendor_data")
-def get_vendor_fun():
+def get_vendor_fun(current_user: User = Depends(get_current_active_user)):
     data={"Error":"False","Message":"Data found","Vendordata":[]}
     get_vendor_que=json.loads(vendor_master_data.objects().to_json())
     if get_vendor_que:
@@ -171,7 +171,7 @@ def get_vendor_fun():
         return JSONResponse(content=a, status_code=400)
 
 @app.post("/update_vendor_date")
-def update_vendor_fun(get_schema:update_vendor_schema):
+def update_vendor_fun(get_schema:update_vendor_schema, current_user: User = Depends(get_current_active_user)):
      update_vendor_query = vendor_master_data.objects(
             company_code=get_schema.company_code, status="A"
         ).update_one(
