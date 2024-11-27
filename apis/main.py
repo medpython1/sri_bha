@@ -14,7 +14,7 @@ from jwt.exceptions import PyJWTError
 
 app = FastAPI()
 
-connect(db="Sri_bha",username='new_user', password='Svs@123', host="98.80.9.80", port=27017)
+connect(db="Sri_bha",username='new_user', password='Svs@123', host="18.215.153.62", port=27017)
 # connect(db="New_data",host="localhost",port=27017)
 
 # connect( db='SMBT', username='api-user', password='mh$cover@47', host='ec2-13-127-65-92.ap-south-1.compute.amazonaws.com:27017')
@@ -192,8 +192,8 @@ def update_vendor_fun(get_schema:update_vendor_schema, current_user: User = Depe
         return JSONResponse(content=sucess_message, status_code=200)
 @app.post("/generate_bill")
 def generate_bill_fun(me:create_bill_schema):
-    invoice_num="INV{:002d}".format(bill_details.objects.count()+1)
-    store_data_in_db=bill_details(sno=bill_details.objects.count()+1,
+    invoice_num="INV{:002d}".format(generate_bill.objects.count()+1)
+    store_data_in_db=generate_bill(sno=generate_bill.objects.count()+1,
                                   invoice_no=invoice_num,
                                   eway_number=me.eway_number,purchase_number=me.purchase_number,
                                   purchase_date=me.purchase_date,company_name=me.company_name,

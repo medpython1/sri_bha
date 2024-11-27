@@ -32,7 +32,7 @@ class generate_bill(Document):
     invoice_no= StringField()
     eway_number= StringField()
     purchase_number= StringField()
-    purchase_date= DateField()
+    purchase_date= StringField()
     company_name= StringField()
     billing_address= StringField()
     shipping_address= StringField()
