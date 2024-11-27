@@ -29,4 +29,26 @@ class update_vendor_schema(BaseModel):
     gst:str
     mobilenumber:str
     modify_by:str
-
+class create_bill_schema(BaseModel):
+    billing_address :str
+    shipping_address :str
+    eway_number :str
+    purchase_number :str
+    purchase_date  :str
+    gst_number:str
+    vechine_number :str
+    product_name_list :str
+    Hsn_list:str
+    Quantity_list :float
+    UOM_data_list:str
+    price_list :float
+    total_list:float
+    company_name:str
+    total_amount :float
+    sgst :float
+    file_path:str
+    qr_path:str
+    cgst :float
+    igst:float
+    total_amount_after_tax :float
+    for_in_words:str

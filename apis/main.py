@@ -113,7 +113,7 @@ async def signup(me: UserCreate, current_user: User = Depends(get_current_active
     user = User(sno=User.objects.count()+1,user_id=Employee_id,name=me.name, password=password, roles=me.roles, department=me.department)
     try:
         user.save()
-        return {"message": "User created successfully"}
+        return {"Error":"False","message": "User created successfully"}
     except OperationError:
         return "Invalid Credentials"
     
@@ -154,7 +154,7 @@ def create_vendor_fun(get_Schema:add_vendor_schema, current_user: User = Depends
                                        city=get_Schema.city,state=get_Schema.state,pincode=get_Schema.pincode,
                                        gst=get_Schema.gst,mobilenumber=get_Schema.mobilenumber,created_by=get_Schema.created_by,created_on=current_time,
                                        modify_by=get_Schema.created_by,modify_on=current_time).save()
-    return {"message": "Vendor created successfully"}
+    return {"Error":"False","message": "Vendor created successfully"}
 current_time=datetime.datetime.now()
 @app.get("/get_vendor_data")
 def get_vendor_fun(current_user: User = Depends(get_current_active_user)):
@@ -190,6 +190,36 @@ def update_vendor_fun(get_schema:update_vendor_schema, current_user: User = Depe
      if update_vendor_query:
         sucess_message={"Error":"False","Message":"Successfully Updated"}
         return JSONResponse(content=sucess_message, status_code=200)
+@app.post("/generate_bill")
+def generate_bill_fun(me:create_bill_schema):
+    invoice_num="INV{:002d}".format(bill_details.objects.count()+1)
+    store_data_in_db=bill_details(sno=bill_details.objects.count()+1,
+                                  invoice_no=invoice_num,
+                                  eway_number=me.eway_number,purchase_number=me.purchase_number,
+                                  purchase_date=me.purchase_date,company_name=me.company_name,
+                                  billing_address=me.billing_address,shipping_address=me.shipping_address,
+                                  gst_number=me.gst_number,vechine_number=me.vechine_number,created_on=current_time,
+                                  created_by="admin"
+                                  ).save()
+    bill_product_details_data=bill_product_details(sno=bill_product_details.objects.count()+1,
+                                              inv_bill=invoice_num,product_name=me.product_name_list,
+                                              Hsn=me.Hsn_list,UOM_data=me.UOM_data_list,
+                                              price=me.price_list,Amount=me.total_list,created_on=current_time,
+                                              created_by="admin").save()
+    bill_id="Bill{:002d}".format(bill_details.objects.count()+1)
+    bill_details_data=bill_details(sno=bill_details.objects.count()+1,
+                                   company_name=me.company_name,bill_id=bill_id,inv_bill=invoice_num,
+                                   total_amount=me.total_amount,sgst=me.sgst,cgst=me.cgst,
+                                   file_path=me.file_path,qr_code=me.qr_path,
+                                   created_on=current_time,created_by="Admin").save()
+    
+    if store_data_in_db:
+        a={"Error":"False","Message":"Successfully Bill Created"}
+        return JSONResponse(content=a, status_code=200)
+    else:
+        a={"Error":"True","Message":"Something Went Wrong"}
+        return JSONResponse(content=a, status_code=400)
+
 
 
 
