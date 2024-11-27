@@ -10,8 +10,6 @@ from fastapi.staticfiles import StaticFiles
 from apis.model import *
 from apis.schema import *
 import datetime
-from jwt.exceptions import PyJWTError
-
 app = FastAPI()
 
 connect(db="Sri_bha",username='new_user', password='Svs@123', host="18.215.153.62", port=27017)
@@ -105,7 +103,7 @@ async def signup(me: UserCreate, current_user: User = Depends(get_current_active
     
     result = User.objects.order_by("-user_id").first()
     if result:
-        Employee_id = result.user_id + 1
+        Employee_id = result.Employee_id + 1
     else:
         Employee_id = 1001
 
@@ -154,7 +152,12 @@ def create_vendor_fun(get_Schema:add_vendor_schema, current_user: User = Depends
                                        city=get_Schema.city,state=get_Schema.state,pincode=get_Schema.pincode,
                                        gst=get_Schema.gst,mobilenumber=get_Schema.mobilenumber,created_by=get_Schema.created_by,created_on=current_time,
                                        modify_by=get_Schema.created_by,modify_on=current_time).save()
-    return {"Error":"False","message": "Vendor created successfully"}
+    if store_vendor_db:
+        a={"Error":"False","Message":"successfully Vendor Created"}
+        return JSONResponse(content=a, status_code=200)
+    else:
+        a={"Error":"True","Message":"Something Went Wrong"}
+        return JSONResponse(content=a, status_code=400)
 current_time=datetime.datetime.now()
 @app.get("/get_vendor_data")
 def get_vendor_fun(current_user: User = Depends(get_current_active_user)):
@@ -190,8 +193,9 @@ def update_vendor_fun(get_schema:update_vendor_schema, current_user: User = Depe
      if update_vendor_query:
         sucess_message={"Error":"False","Message":"Successfully Updated"}
         return JSONResponse(content=sucess_message, status_code=200)
+     
 @app.post("/generate_bill")
-def generate_bill_fun(me:create_bill_schema):
+def generate_bill_fun(me:create_bill_schema, current_user: User = Depends(get_current_active_user)):
     invoice_num="INV{:002d}".format(generate_bill.objects.count()+1)
     store_data_in_db=generate_bill(sno=generate_bill.objects.count()+1,
                                   invoice_no=invoice_num,
@@ -219,6 +223,27 @@ def generate_bill_fun(me:create_bill_schema):
     else:
         a={"Error":"True","Message":"Something Went Wrong"}
         return JSONResponse(content=a, status_code=400)
+    
+@app.post("/search_vendor_details")
+def get_vendor_list(me:search_vendor_data, current_user: User = Depends(get_current_active_user)):
+    data={"Error":"False","Message":"Data found","Vendorlist":[]}
+    result =json.loads( vendor_master_data.objects(company_name__icontains=me.unit_name,status="A").order_by("-sno").to_json())
+    if result:
+        geting_data=[{"company_name":data["company_name"],"company_address":data["company_address"],
+               "city":data["city"],"state":data["state"],"pincode":data["pincode"],"gst":data["gst"]
+               } for data in result]
+        data["Vendorlist"].append(geting_data)
+        
+        return data
+    else:
+        a={"Error":"True","Message":"No data Found"}
+        return JSONResponse(content=a, status_code=400)
+
+
+
+
+
+
 
 
 
