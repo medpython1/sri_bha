@@ -52,3 +52,7 @@ class create_bill_schema(BaseModel):
     igst:float
     total_amount_after_tax :float
     for_in_words:str
+
+class search_vendor_data(BaseModel):
+    unit_name:str
+
